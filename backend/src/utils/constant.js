@@ -1,20 +1,14 @@
-/*
 
-    write here contanst variable
-
-*/
-
-
-export const loginType = {
+export const loginType = Object.freeze({
       EMAIL_PASSWORD : "EMAIL_PASSWORD",
       GOOGLE : "GOOGLE"
-}
+})
 
-export const docsUserType = {
+export const docsUserType = Object.freeze({
   VIEWR : "Viwer",
   EDITOR : "Editor",
   OWNER : "Owner"
-}
+})
 
 
 export const loginTypeEnum = Object.values(loginType)
