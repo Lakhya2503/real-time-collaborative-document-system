@@ -3,5 +3,10 @@
   "bracketSpacing": true,
   "tabWidth": 2,
   "trailingComma": "es5",
-  "semi": true
+  "semi": true,
+  "printWidth": 80,
+  "arrowParens": "always",
+  "endOfLine": "lf",
+  "jsxBracketSameLine": false,
+  "proseWrap": "preserve"
 }

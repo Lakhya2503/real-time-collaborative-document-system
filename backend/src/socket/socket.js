@@ -1,6 +1,7 @@
 import cookie from "cookie";
 import jwt from "jsonwebtoken";
 import { ENV } from "../config/ENV.js";
+import { getUser, setUser } from "../redis/client.js";
 import ApiError from "../utils/ApiError.js";
 import { CONNECT_DISCONNET_EVENT, DOCUMENT_EVENT } from "./socketEvents.js";
 
@@ -39,14 +40,14 @@ export const initializeSocketIO = (io) => {
       let user;
 
       //  ?? user serach in redis
-      user = await redisClient.getUser(decodedToken._id);
+      user = await getUser(decodedToken._id);
 
       // ?? when not find in redis then search on mongo
       if (!user) {
         user = await User.findById(decodedToken._id);
         //  ** user find in mongo then add on redis
         if (user) {
-          user = await redisClient.getUser(decodedToken._id);
+          await setUser(decodedToken._id, user);
         }
       }
 
