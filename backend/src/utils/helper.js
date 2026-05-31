@@ -37,6 +37,7 @@ export const fetchDoc = async (docId) => {
 
   return document;
 };
+
 export const otpGenerator = () => {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let otp = "";
