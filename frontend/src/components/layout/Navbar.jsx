@@ -30,12 +30,12 @@ export default function Navbar({ onSearchChange }) {
   };
 
   return (
-    <header className="h-12 bg-white/85 dark:bg-[#070B14]/80 backdrop-blur-md border-b border-[#E5E7EB] dark:border-white/10 sticky top-0 z-30 px-4 flex items-center justify-between transition-colors duration-300">
+    <header className="h-14 bg-white/85 dark:bg-[#070B14]/80 backdrop-blur-md border-b border-[#E5E7EB] dark:border-white/10 sticky top-0 z-30 px-6 flex items-center justify-between transition-colors duration-300">
       
       {/* Search Bar */}
-      <form onSubmit={handleSearchSubmit} className="flex-1 max-w-[280px] relative">
-        <div className="pointer-events-none absolute inset-y-0 left-2.5 flex items-center text-[#6B7280] dark:text-slate-500">
-          <Search size={13} />
+      <form onSubmit={handleSearchSubmit} className="flex-1 max-w-[420px] relative">
+        <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[#6B7280] dark:text-slate-500">
+          <Search size={15} />
         </div>
         <input
           type="text"
@@ -45,16 +45,16 @@ export default function Navbar({ onSearchChange }) {
             setSearchVal(e.target.value);
             if (onSearchChange) onSearchChange(e.target.value);
           }}
-          className="w-full bg-[#F7FAFF] dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-white/10 rounded-lg pl-7.5 pr-4 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#0D6EFD] text-[#081B3A] dark:text-[#E5E7EB] placeholder-[#6B7280]/40 dark:placeholder-[#94A3B8]/40 transition-all font-semibold duration-300"
+          className="w-full h-9 bg-[#F7FAFF] dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-white/10 rounded-xl pl-10 pr-4 text-[13px] focus:outline-none focus:ring-2 focus:ring-[#0D6EFD]/50 text-[#081B3A] dark:text-[#E5E7EB] placeholder-[#6B7280]/50 dark:placeholder-[#94A3B8]/50 transition-all font-medium duration-300"
         />
       </form>
 
       {/* Utilities Control */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         
         {/* Create Document button */}
-        <Button size="sm" onClick={handleCreateDocument} icon={Plus}>
-          New Doc
+        <Button size="md" onClick={handleCreateDocument} icon={Plus} className="text-[13px] font-semibold px-3 h-9 inline-flex items-center shadow-sm shadow-blue-500/10">
+          New Document
         </Button>
 
         {/* Theme Toggle Button */}

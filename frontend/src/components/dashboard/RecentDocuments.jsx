@@ -53,16 +53,16 @@ export default function RecentDocuments({ documents, onUpdate }) {
         <div
           key={doc.id}
           onClick={() => navigate(`/editor/${doc.id}`)}
-          className="flex items-center justify-between py-2 px-3.5 bg-white dark:bg-[#0F172A]/40 border border-[#E5E7EB] dark:border-white/10 hover:bg-[#F7FAFF] dark:hover:bg-[#0F172A] hover:border-[#E5E7EB] dark:hover:border-white/20 rounded-xl transition-all duration-300 cursor-pointer group relative"
+          className="flex items-center justify-between h-14 px-3 bg-white dark:bg-[#0F172A]/20 border border-[#E5E7EB] dark:border-white/5 hover:bg-[#F7FAFF] dark:hover:bg-[#0F172A]/50 hover:border-blue-500/30 dark:hover:border-blue-500/20 hover:scale-[1.003] hover:shadow-[0_6px_25px_rgba(13,110,253,0.02)] rounded-xl transition-all duration-200 ease-in-out cursor-pointer group relative"
         >
           {/* Left: icon, title, tags */}
           <div className="flex items-center gap-3 min-w-0">
-            <FileText size={14} className="text-[#0D6EFD] shrink-0" />
+            <FileText size={15} className="text-[#0D6EFD] shrink-0" />
             <div className="min-w-0">
-              <span className="font-semibold text-xs text-[#081B3A] dark:text-slate-200 group-hover:text-[#0D6EFD] dark:group-hover:text-white transition-colors truncate block">
+              <span className="font-medium text-[15px] text-[#081B3A] dark:text-slate-200 group-hover:text-[#0D6EFD] dark:group-hover:text-white transition-colors truncate block">
                 {doc.name}
               </span>
-              <span className="text-[10px] text-[#6B7280] dark:text-[#94A3B8] block mt-0.5 font-medium transition-colors">
+              <span className="text-[12px] text-[#6B7280] dark:text-[#94A3B8] block mt-0.5 leading-none transition-colors">
                 Updated {doc.updatedAt} • {doc.sharedUsers.length} collaborator{doc.sharedUsers.length === 1 ? '' : 's'}
               </span>
             </div>
@@ -72,9 +72,9 @@ export default function RecentDocuments({ documents, onUpdate }) {
           <div className="flex items-center gap-1.5 shrink-0 relative">
             <button
               onClick={(e) => handleToggleStar(e, doc.id, doc.starred)}
-              className="p-1 rounded text-[#6B7280] dark:text-[#94A3B8] hover:text-amber-500 transition-colors"
+              className="p-1 rounded-md text-[#6B7280] dark:text-[#94A3B8] hover:text-amber-500 transition-colors"
             >
-              <Star size={13} fill={doc.starred ? 'currentColor' : 'none'} className={doc.starred ? 'text-amber-500' : ''} />
+              <Star size={15} fill={doc.starred ? 'currentColor' : 'none'} className={doc.starred ? 'text-amber-500' : ''} />
             </button>
 
             {/* Three dot actions trigger */}
@@ -84,9 +84,9 @@ export default function RecentDocuments({ documents, onUpdate }) {
                   e.stopPropagation();
                   setActionMenuOpen(actionMenuOpen === doc.id ? null : doc.id);
                 }}
-                className="p-1 rounded text-[#6B7280] dark:text-[#94A3B8] hover:text-[#081B3A] dark:hover:text-[#E5E7EB] hover:bg-[#E5E7EB]/40 dark:hover:bg-[#0F172A] transition-colors"
+                className="p-1 rounded-md text-[#6B7280] dark:text-[#94A3B8] hover:text-[#081B3A] dark:hover:text-[#E5E7EB] hover:bg-[#E5E7EB]/40 dark:hover:bg-[#0F172A] transition-colors"
               >
-                <MoreVertical size={13} />
+                <MoreVertical size={15} />
               </button>
 
               {/* Action Menu Popover */}
