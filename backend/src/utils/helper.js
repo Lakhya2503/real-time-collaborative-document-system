@@ -21,8 +21,10 @@ export const secureUser = async (userId) => {
 export const fetchDoc = async (docId) => {
   let document = null;
   document = await getDocument(docId);
+  console.log("docuemt", document)
   if (!document) {
     document = await Doc.findById(docId);
+    console.log("docuemt", document)
     if (document) {
       await setDocument(docId, document);
     }
@@ -30,6 +32,7 @@ export const fetchDoc = async (docId) => {
   if(!document) {
     throw new ApiError(400, "Document not exists")
   }
+
   return document;
 };
 
