@@ -84,11 +84,11 @@ export const registerUser = asyncHandler(async (req, res) => {
   );
 
   return res
-    .status(200)
+    .status(201)
     .cookie("accessToken", accessToken, option)
     .cookie("refreshToken", refreshToken, option)
     .json(
-      new ApiResponse(200, { token: unHashedToken}, `user created  successfully`)
+      new ApiResponse(201, { token: unHashedToken}, `user created  successfully`)
     );
 });
 
