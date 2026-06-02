@@ -32,7 +32,7 @@ export const generateAccessRefreshToken = async (userId) => {
 };
 
 export const registerUser = asyncHandler(async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   const { fullName, email, password } = req.body;
 
   requiredField([fullName, email, password]);
@@ -84,18 +84,18 @@ export const registerUser = asyncHandler(async (req, res) => {
   );
 
   return res
-    .status(200)
+    .status(201)
     .cookie("accessToken", accessToken, option)
     .cookie("refreshToken", refreshToken, option)
     .json(
-      new ApiResponse(200, { token: unHashedToken}, `user created  successfully`)
+      new ApiResponse(201, { token: unHashedToken}, `user created  successfully`)
     );
 });
 
 export const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  console.log(req.body);
+  // console.log(req.body);
 
   requiredField([email, password]);
 
@@ -105,7 +105,7 @@ export const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(401, "User doesn't exist with this email");
   }
 
-  console.log(user)
+  // console.log(user)
 
   if (user.isEmailVerified === false) {
     throw new ApiError(
@@ -428,7 +428,7 @@ export const verifyEmail = asyncHandler(async (req, res) => {
 
   await user.save({ validateBeforeSave: false });
 
-    console.log("user", user)
+    // console.log("user", user)
 
   return res
     .status(200)
