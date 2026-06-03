@@ -105,7 +105,7 @@ export const acceptCollaboration = asyncHandler(async (req, res) => {
   const emailAccept = upcommingEmail.replace("email=", "");
   const collabToken = join.replace("join=", "");
   let user = null;
-   const token = req?.cookies?.accessToken ||req.header("Authorization")?.replace("Bearer ", "");
+   const token = req?.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
 
     try {
       const decodedToken = jwt.verify(token, ENV.ACCESS_TOKEN_SECRET);
