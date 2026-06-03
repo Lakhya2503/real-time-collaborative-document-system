@@ -3,21 +3,28 @@ import {
   setUpdateDocumentOperation,
 } from "../redis/client.js";
 import ApiError from "../utils/ApiError.js";
+import asyncHandler from "../utils/asyncHandler.js";
 import { fetchDoc } from "../utils/helper.js";
 import { DOCUMENT_EVENT } from "./socketEvents.js";
 
-export const mountDocumetSetChangeEvent = (socket) => {
-  socket.on(DOCUMENT_EVENT.CHANGE_DOCUMENT, async (message) => {
-    const { docId, delta } = message;
+export const mountDocumentSendOperation = (socket) => {
+  socket.on(DOCUMENT_EVENT.SEND_OPERATION, async (data) => {
+    // const { docId, delta } = message;
     //  TODO : FOR TESTING USE MESSAGE BUT WHEN ENTER ON PRODUCTION THE USE DATA OR PAYLOAD
     /*
     ?? data WILL GET ON INSTED OF MESSAGE IN PARAM
-      const { docId, delta } = data
+
   */
 
     // INTEGRETE OT HERE ( operational transformation )
+    // USING TIMESTAMP
 
-    console.log("message", message);
+
+    console.log(data);
+    const { docId, delta } = data.data;
+    console.log("delta", delta);
+    console.log("docId", docId);
+
     if (!docId) {
       throw new ApiError(400, "Doc Id is required");
     }
@@ -27,8 +34,12 @@ export const mountDocumetSetChangeEvent = (socket) => {
   });
 };
 
-export const mountDocumetGetChangeEvent = (socket) => {
-  socket.on(DOCUMENT_EVENT.VIEW_DOCUMENT, async ({ docId }) => {
+export const mountDocumentReciveOperation = (socket) => {
+  socket.on(DOCUMENT_EVENT.RECEIVE_OPERATION, async (data) => {
+    console.log("data", data);
+
+    const { docId } = data;
+
     if (!docId) {
       throw new ApiError(400, "Doc Id is required");
     }
@@ -38,3 +49,15 @@ export const mountDocumetGetChangeEvent = (socket) => {
     return doc;
   });
 };
+
+
+const flushOnMongo = asyncHandler(async(payload)=> {
+
+   // TODO : WHEN USER ON ONGOING WORK THEN EVERY 10SEC TRIGER THIS FUNCTION
+  const { data , docId } = payload;
+
+  // ?? GET ALL DATA FROM REDIS COLLAB
+  // ?? ARRANGE FULL OF DATA
+  // ?? AND FINALLY UPDATE FULL OF DATA
+
+})

@@ -3,18 +3,71 @@ import jwt from "jsonwebtoken";
 import { ENV } from "../config/ENV.js";
 import { getUser, setUser } from "../redis/client.js";
 import ApiError from "../utils/ApiError.js";
+import { fetchDoc } from "../utils/helper.js";
 import {
-  mountDocumetGetChangeEvent,
-  mountDocumetSetChangeEvent,
+  mountDocumentReciveOperation,
+  mountDocumentSendOperation,
 } from "./document.socket.js";
 import { CONNECT_DISCONNET_EVENT, DOCUMENT_EVENT } from "./socketEvents.js";
 
 const mountJoinDocumentEvent = (socket) => {
-  socket.on(DOCUMENT_EVENT.JOIN_DOCUMENT, (message) => {
-    console.log("USER JOIN THE DOCUMENT ⚓, DOC ID", message.docId);
-    socket.join(message.docId);
-    socket.roomId = message.docId
+  socket.on(DOCUMENT_EVENT.USER_JOIN, async (data) => {
+    const document = await fetchDoc(data.docId);
+
+    console.log("document", document);
+    console.log("user", socket.user)
+
+
+    let docOwnerId = document.ownerId
+    let currentUserId = socket.user._id
+
+
+    if(docOwnerId.toString() !== currentUserId.toString()) {
+      console.error("your not owner of this doc");
+    }
+
+    let user =   document.users.filter((user)=>{
+      user._id.toString() === socker.user._id.toString()
+      return user.role
+    })
+    
+
+    console.log("docUSer", user)
+
+
+
+
+
+
+    console.log("USER JOIN THE DOCUMENT ⚓, DOC ID", data.docId);
+    socket.join(data.docId);
+    socket.roomId = data.docId;
   });
+
+/*
+  document {
+  _id: new ObjectId('6a1ea3843eb0e4ad6667e2dd'),
+  title: 'new doc',
+  ownerId: new ObjectId('6a1e98445da01085b3e65c50'),
+  isPublic: false,
+  isTrash: false,
+  users: [],
+  createdAt: 2026-06-02T09:33:56.906Z,
+  updatedAt: 2026-06-02T09:33:56.906Z,
+  __v: 0
+}
+
+user {
+  _id: '6a1e97ff5da01085b3e65c4f',
+  fullName: 'Laxman Shinde',
+  email: 'shindelaxman@gmail.com',
+  avatar: '',
+  isEmailVerified: false,
+  createdAt: '2026-06-02T08:44:47.782Z',
+  updatedAt: '2026-06-02T08:44:47.973Z',
+  __v: 0
+}
+*/
 
   //  TODO : NOTIFY OTHER USER TO JOIN NEW USERS JOIN IN DOCUMENT
   // ** : WRITE HERE THIS LOGIC
@@ -27,11 +80,8 @@ export const initializeSocketIO = (io) => {
 
       let token = cookies?.accessToken;
 
-      console.log("Token", token)
-
       if (!token) {
         token = token.handshake.auth?.token;
-        console.log("TOKEN FOUND IN HANDSHAKE AUTH 🛜", token);
       }
 
       if (!token) {
@@ -42,8 +92,8 @@ export const initializeSocketIO = (io) => {
       }
 
       const decodedToken = jwt.verify(token, ENV.ACCESS_TOKEN_SECRET);
-      if(!decodedToken) {
-         throw new ApiError(401, "Token Expired or Invalid 🤳")
+      if (!decodedToken) {
+        throw new ApiError(401, "Token Expired or Invalid 🤳");
       }
 
       // TODO : USER SEARCH ON REDIS OR MONGO
@@ -61,7 +111,6 @@ export const initializeSocketIO = (io) => {
         }
       }
 
-
       // ?? when didn't didn't find anywhere then token invalid or un-authorized
       if (!user) {
         throw new ApiError(401, "UN-AUTHORIZED TOKEN , TOKEN IS INVALID ⛔");
@@ -75,9 +124,8 @@ export const initializeSocketIO = (io) => {
 
       // common event mounted here
       mountJoinDocumentEvent(socket);
-      mountDocumetSetChangeEvent(socket);
-
-      mountDocumetGetChangeEvent(socket);
+      mountDocumentReciveOperation(socket);
+      mountDocumentSendOperation(socket);
 
       socket.on(CONNECT_DISCONNET_EVENT.DISCONNECT, () => {
         console.log("⛓️‍💥🚨 USER DISS-CONNECTED USER ID : ", user._id.toString());
