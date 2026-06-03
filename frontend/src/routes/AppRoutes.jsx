@@ -10,7 +10,9 @@ import ResetPassword from '../pages/auth/ResetPassword';
 import Dashboard from '../pages/dashboard/Dashboard';
 import Documents from '../pages/dashboard/Documents';
 import SharedDocuments from '../pages/dashboard/SharedDocuments';
-import Editor from '../pages/editor/Editor';
+import EditingPage from '../pages/EditingPage';
+
+
 import Profile from '../pages/profile/Profile';
 import Settings from '../pages/profile/Settings';
 
@@ -48,11 +50,13 @@ export default function AppRoutes() {
       
       <Route path="/editor/:id" element={
         <ProtectedRoute>
-          <Editor />
+          <EditingPage />
         </ProtectedRoute>
       } />
-      
+
+
       <Route path="/profile" element={
+
         <ProtectedRoute>
           <Profile />
         </ProtectedRoute>

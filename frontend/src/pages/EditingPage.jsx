@@ -1,13 +1,65 @@
-import React, { useState, useEffect, useRef } from 'react'
-import Quill from 'quill'
-import 'quill/dist/quill.snow.css'
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import Quill from 'quill';
+import 'quill/dist/quill.snow.css';
 import { 
   ChevronLeft, Cloud, Users, Share2, Send, Plus, 
   Trash2, MessageSquare, History, List, X, Copy, Check, Sun, Moon, 
   BookOpen, Search, Undo, Redo, RefreshCw, FileText
-} from 'lucide-react'
+} from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { documentService } from '../services/documentService';
 
-export default function EditingPage({ document: doc, theme, toggleTheme, onBack, onSave }) {
+export default function EditingPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { user, triggerToast } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const [doc, setDoc] = useState(null);
+
+  // Fetch document details
+  useEffect(() => {
+    const fetched = documentService.getById(id);
+    if (!fetched) {
+      triggerToast('Document not found', 'warning');
+      navigate('/dashboard');
+      return;
+    }
+    setDoc(fetched);
+  }, [id, navigate, triggerToast]);
+
+  const handleSave = (newTitle, newContent, words) => {
+    const updated = documentService.update(id, { name: newTitle, content: newContent, wordCount: words });
+    if (updated) {
+      setDoc(updated);
+    }
+  };
+
+  const handleBack = () => {
+    navigate('/dashboard');
+  };
+
+  if (!doc) {
+    return (
+      <div className="min-h-screen bg-[#F7FAFF] dark:bg-[#070B14] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0D6EFD]"></div>
+      </div>
+    );
+  }
+
+  return (
+    <EditingPageContent
+      document={doc}
+      theme={theme}
+      toggleTheme={toggleTheme}
+      onBack={handleBack}
+      onSave={handleSave}
+    />
+  );
+}
+
+function EditingPageContent({ document: doc, theme, toggleTheme, onBack, onSave }) {
   const [title, setTitle] = useState(doc.title || doc.name || 'Untitled Document')
   const [isSyncing, setIsSyncing] = useState(false)
   
@@ -36,29 +88,53 @@ export default function EditingPage({ document: doc, theme, toggleTheme, onBack,
   // Document Outline State
   const [outline, setOutline] = useState([])
   
+  const [wordCount, setWordCount] = useState(doc.wordCount || 0);
+
   // History State
-  const [history, setHistory] = useState([
-    { id: 1, time: 'Just now', author: 'You', desc: 'Saved changes to cloud', active: true },
-    { id: 2, time: '10 minutes ago', author: 'Lisa Chen', desc: 'Added meeting sync proposal section', active: false },
-    { id: 3, time: '45 minutes ago', author: 'Alex Johnson', desc: 'Formatted code blocks', active: false },
-    { id: 4, time: '2 hours ago', author: 'Tanmay Wagh', desc: 'Created document from template', active: false }
-  ])
+  const [history, setHistory] = useState(() => {
+    if (doc.versions && doc.versions.length > 0) {
+      return doc.versions.map((v, index) => ({
+        id: v.id,
+        time: v.date,
+        author: v.author,
+        desc: v.name,
+        active: index === 0,
+        content: v.content
+      }));
+    }
+    return [
+      { id: 1, time: 'Just now', author: 'You', desc: 'Saved changes to cloud', active: true },
+      { id: 2, time: '10 minutes ago', author: 'Lisa Chen', desc: 'Added meeting sync proposal section', active: false },
+      { id: 3, time: '45 minutes ago', author: 'Alex Johnson', desc: 'Formatted code blocks', active: false },
+      { id: 4, time: '2 hours ago', author: 'Tanmay Wagh', desc: 'Created document from template', active: false }
+    ];
+  });
 
   // Comments State
-  const [comments, setComments] = useState([
-    { 
-      id: 1, 
-      author: 'Lisa Chen', 
-      text: 'This introductory paragraph looks very solid. Should we add a link to the project roadmap?', 
-      time: '10m ago' 
-    },
-    { 
-      id: 2, 
-      author: 'Alex Johnson', 
-      text: 'Love the syntax highlighting in the pre blocks! Let’s add a section for Node setup as well.', 
-      time: '2m ago' 
+  const [comments, setComments] = useState(() => {
+    if (doc.comments && doc.comments.length > 0) {
+      return doc.comments.map(c => ({
+        id: c.id,
+        author: c.user,
+        text: c.text,
+        time: c.time
+      }));
     }
-  ])
+    return [
+      { 
+        id: 1, 
+        author: 'Lisa Chen', 
+        text: 'This introductory paragraph looks very solid. Should we add a link to the project roadmap?', 
+        time: '10m ago' 
+      },
+      { 
+        id: 2, 
+        author: 'Alex Johnson', 
+        text: 'Love the syntax highlighting in the pre blocks! Let’s add a section for Node setup as well.', 
+        time: '2m ago' 
+      }
+    ];
+  });
   const [newCommentText, setNewCommentText] = useState('')
 
   // Chat State
@@ -132,6 +208,7 @@ export default function EditingPage({ document: doc, theme, toggleTheme, onBack,
         const html = quillInstance.current.root.innerHTML
         const text = quillInstance.current.getText()
         const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length
+        setWordCount(words)
 
         // Fire auto-save after short delay to simulate cloud sync
         const timeoutId = setTimeout(() => {
@@ -706,7 +783,7 @@ export default function EditingPage({ document: doc, theme, toggleTheme, onBack,
           <div className="ribbon-group">
             <div className="ribbon-buttons-row">
               <button type="button" className="ribbon-custom-btn" onClick={() => {
-                alert(`Proofing Statistics:\n- Total Words: ${doc.wordCount || 0}\n- Estimated Reading Time: ${Math.ceil((doc.wordCount || 0) / 200)} min\n- Characters: ${(quillInstance.current ? quillInstance.current.getText() : '').length} chars`);
+                alert(`Proofing Statistics:\n- Total Words: ${wordCount}\n- Estimated Reading Time: ${Math.ceil(wordCount / 200)} min\n- Characters: ${(quillInstance.current ? quillInstance.current.getText() : '').length} chars`);
               }} title="Proofing Statistics">
                 <BookOpen size={16} style={{ marginRight: '6px' }} />
                 <span>Word Count Details</span>
@@ -964,7 +1041,7 @@ export default function EditingPage({ document: doc, theme, toggleTheme, onBack,
         <div className="status-bar-left">
           <span>Page 1 of 1</span>
           <span className="status-bar-separator">|</span>
-          <span>{doc.wordCount || 0} words</span>
+          <span>{wordCount} words</span>
           <span className="status-bar-separator">|</span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }} title="Proofing status check">
             <Check size={12} style={{ color: '#10b981' }} /> Spelling: Checked

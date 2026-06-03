@@ -12,10 +12,7 @@ import {
   ChevronLeft, 
   ChevronRight,
   FolderOpen,
-  Archive,
-  LayoutGrid,
-  LogOut,
-  Edit
+  LogOut
 } from 'lucide-react';
 import { BRAND_NAME } from '../../utils/constants';
 import { useAuth } from '../../context/AuthContext';
@@ -33,14 +30,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
     { name: 'Starred', path: '/documents?filter=starred', icon: Star },
     { name: 'Recent', path: '/documents?filter=recent', icon: Clock },
     { name: 'Trash', path: '/documents?filter=trash', icon: Trash2 },
-  ];
-
-  const folders = [
-    { name: 'My Documents', path: '/documents', icon: FolderOpen },
-    { name: 'Shared', path: '/shared', icon: Users2 },
-    { name: 'Drafts', path: '/documents?filter=drafts', icon: Edit },
-    { name: 'Templates', path: '/dashboard', icon: LayoutGrid },
-    { name: 'Archive', path: '/documents?filter=archive', icon: Archive }
   ];
 
   const handleLogout = () => {
@@ -75,7 +64,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
         </div>
 
         {/* Primary Navigation Menu */}
-        <nav className="mt-2.5 px-1.5 space-y-0.75 shrink-0">
+        <nav className="mt-3 px-1.5 space-y-1 shrink-0">
           {mainNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = isActiveLink(item.path);
@@ -108,42 +97,11 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
             );
           })}
         </nav>
-
-        {/* Folders Section (Only visible/expanded when sidebar open) */}
-        {sidebarOpen && (
-          <div className="mt-4 px-3 shrink-0">
-            <h5 className="text-[10px] font-extrabold tracking-wider text-[#6B7280] dark:text-slate-500 uppercase mb-1 px-1">
-              Folders
-            </h5>
-            <div className="space-y-0.75">
-              {folders.map((folder) => {
-                const Icon = folder.icon;
-                const isActive = isActiveLink(folder.path);
-
-                return (
-                  <NavLink
-                    key={folder.name}
-                    to={folder.path}
-                    className={`w-full flex items-center gap-2 px-2 py-1 rounded-md text-[13px] ${isActive ? 'font-semibold' : 'font-medium'} transition-all duration-200 group
-                      ${isActive 
-                        ? 'text-[#0D6EFD]' 
-                        : 'text-[#6B7280] dark:text-[#94A3B8]/65 opacity-65 hover:opacity-100 hover:text-[#081B3A] dark:hover:text-[#E5E7EB] hover:bg-[#E5E7EB]/30 dark:hover:bg-[#0F172A]/20'
-                      }
-                    `}
-                  >
-                    <Icon size={13} className="shrink-0 text-[#6B7280] dark:text-slate-500 group-hover:text-[#0D6EFD]" />
-                    <span className="truncate">{folder.name}</span>
-                  </NavLink>
-                );
-              })}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Bottom Sidebar Menu */}
       <div className="p-1.5 border-t border-[#E5E7EB] dark:border-white/10 bg-slate-50/50 dark:bg-[#060B14] shrink-0">
-        <div className="space-y-0.75">
+        <div className="space-y-1">
           {/* Profile Shortcut */}
           <NavLink
             to="/profile"
