@@ -122,59 +122,48 @@ export default function App() {
   const [teamMembers, setTeamMembers] = useState(initialTeam);
   const [notifications, setNotifications] = useState(initialNotifications);
   const [activityLogs, setActivityLogs] = useState(initialActivityLogs);
+import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
+import { AuthProvider } from './context/AuthContext';
+import AppRoutes from './routes/AppRoutes';
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <div className="min-h-screen bg-[#F7FAFF] dark:bg-[#070B14] text-[#081B3A] dark:text-[#E5E7EB] transition-colors duration-300 font-sans">
+            <AppRoutes />
+            <ToastNotifier />
+          </div>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
+  );
+}
 
-  // Layout View Modes
-  const [viewMode, setViewMode] = useState('grid'); // grid | list
-  const [autoSave, setAutoSave] = useState(true);
+// Inline Toast notifier listening to AuthContext alerts
+import { useAuth } from './context/AuthContext';
+import { CheckCircle, AlertCircle, Info } from 'lucide-react';
 
-  // Modal controls
-  const [modalType, setModalType] = useState(''); 
-  const [selectedDoc, setSelectedDoc] = useState(null);
+function ToastNotifier() {
+  const { toast } = useAuth();
 
-  // Toast Alerts States
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState('info'); 
+  if (!toast) return null;
 
-  // Stats KPIs
-  const [stats, setStats] = useState({
-    totalDocuments: initialDocs.length,
-    activeTeamMembers: initialTeam.filter(u => u.status === 'Active').length,
-    liveCollaborations: 3,
-    pendingInvitations: 2
-  });
-
-  const [chartData, setChartData] = useState({
-    weeklyDocuments: [
-      { day: 'Mon', count: 12, date: 'May 21' },
-      { day: 'Tue', count: 18, date: 'May 22' },
-      { day: 'Wed', count: 26, date: 'May 23' },
-      { day: 'Thu', count: 15, date: 'May 24' },
-      { day: 'Fri', count: 32, date: 'May 25' },
-      { day: 'Sat', count: 8, date: 'May 26' },
-      { day: 'Sun', count: 6, date: 'May 27' }
-    ],
-    teamProductivity: [
-      { name: 'Engineering', value: 35, color: '#0D6EFD', label: 'Code & Specs' },
-      { name: 'Product', value: 25, color: '#3FA3FF', label: 'User Journeys' },
-      { name: 'Marketing', value: 20, color: '#94a3b8', label: 'Client pitches' },
-      { name: 'Design', value: 20, color: '#cbd5e1', label: 'UX/UI Wireframes' }
-    ]
-  });
-
-  // TOAST TRIGGER
-  const showToast = (msg, type = 'success') => {
-    setToastMessage(msg);
-    setToastType(type);
-    setTimeout(() => setToastMessage(''), 2500);
+  const typeStyles = {
+    success: 'bg-[#0D6EFD] text-white border-[#0D6EFD]',
+    warning: 'bg-rose-500 text-white border-rose-500',
+    info: 'bg-indigo-500 text-white border-indigo-500'
   };
 
-  // THEME SWITCH
-  const toggleTheme = () => {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nextTheme);
-    showToast(`${nextTheme === 'dark' ? 'Dark' : 'Light'} Mode Enabled`, 'info');
+  const Icons = {
+    success: CheckCircle,
+    warning: AlertCircle,
+    info: Info
   };
 
+<<<<<<< HEAD
   // SYNC ACTION
   const handleSyncLogs = () => {
     showToast("Synching metrics with CollabDocs Server...", "info");
@@ -391,6 +380,9 @@ export default function App() {
 
     return () => clearInterval(liveInterval);
   }, [teamMembers.length]);
+=======
+  const IconComponent = Icons[toast.type] || Info;
+>>>>>>> origin/dev
 
   if (currentDocument) {
     return (
@@ -418,6 +410,7 @@ export default function App() {
   }
 
   return (
+<<<<<<< HEAD
     <div className={`min-h-screen flex ${theme === 'dark' ? 'dark' : ''} transition-colors duration-300 bg-[#F7FAFF] dark:bg-[#070B14] text-[#081B3A] dark:text-[#E5E7EB]`}>
       
       
@@ -609,33 +602,15 @@ export default function App() {
           )}
 
         </main>
+=======
+    <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2.5 px-3.5 py-2.5 bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-white/10 rounded-xl shadow-md select-none animate-fade-in transition-all duration-300">
+      <div className={`p-1 rounded-md ${typeStyles[toast.type]}`}>
+        <IconComponent size={12} />
+>>>>>>> origin/dev
       </div>
-
-      {/* 4. Modals Overlays */}
-      <Modals 
-        modalType={modalType}
-        selectedDoc={selectedDoc}
-        onClose={() => { setModalType(''); setSelectedDoc(null); }}
-        onSubmit={handleModalSubmit}
-        documents={documents}
-      />
-
-      {/* 5. Toast alerts */}
-      {toastMessage && (
-        <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2 px-3 py-2 bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-white/10 rounded-lg shadow-md select-none transition-colors duration-300">
-          <div className={`p-1 rounded text-white transition-colors duration-300
-            ${toastType === 'success' ? 'bg-[#0D6EFD]' : ''}
-            ${toastType === 'info' ? 'bg-[#0D6EFD]' : ''}
-            ${toastType === 'warning' ? 'bg-rose-500' : ''}
-          `}>
-            <CheckCircle size={12} />
-          </div>
-          <span className="text-[11px] font-bold text-[#081B3A] dark:text-[#E5E7EB] transition-colors duration-300">
-            {toastMessage}
-          </span>
-        </div>
-      )}
-
+      <span className="text-[10.5px] font-bold text-[#081B3A] dark:text-[#E5E7EB]">
+        {toast.message}
+      </span>
     </div>
   );
 }
