@@ -110,7 +110,6 @@ export const acceptCollaboration = asyncHandler(async (req, res) => {
     try {
       const decodedToken = jwt.verify(token, ENV.ACCESS_TOKEN_SECRET);
       user = await secureUser(decodedToken._id);
-      console.log("user", user)
           addCollaboration(collabToken, user._id);
             return res
               .status(200)

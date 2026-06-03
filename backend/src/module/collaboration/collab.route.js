@@ -3,8 +3,6 @@ import { acceptCollaboration, sendCollaboration } from "./collab.controller.js"
 import { verifyJWT } from "../../middleware/auth.middleware.js"
 import { verifyDocumentOwner } from "../../middleware/document.middleware.js"
 
-
-
 const router = Router()
 
 router.route("/send-collab/:docId").post(verifyJWT,verifyDocumentOwner, sendCollaboration)
