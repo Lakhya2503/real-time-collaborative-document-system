@@ -8,8 +8,6 @@ export const ENV = {
   PORT: process.env.PORT,
   MONGODB_URI: process.env.MONGODB_URI,
   REDIS_URI: process.env.REDIS_URI,
-  RATE_LIMIT_WINDOW_MS: process.env.RATE_LIMIT_WINDOW_MS,
-  RATE_LIMIT_MAX: process.env.RATE_LIMIT_MAX,
   DEFAULT_ROUTE: process.env.DEFAULT_ROUTE,
   CORS_ORIGIN: process.env.CORS_ORIGIN,
   CLIENT_URL: process.env.CLIENT_URL,

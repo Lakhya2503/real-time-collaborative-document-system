@@ -15,12 +15,16 @@ export const COLLABORATION_EVENT = Object.freeze({
       DECLINE_COLLABORATION : "declineCollaborationRequest",
 })
 
+export const NOTIFICATION_EVENT = Object.freeze({
+    NOTIFICATION_SEND : "notificationSend",
+    NOTIFICATION_RECIVED : "notificationRecived"
+})
 
 export const CONNECT_DISCONNET_EVENT = Object.freeze({
   CONNECTION: "connection",
-  DISCONNECT: "Disconnect",
-  CONNECT: "Connect",
-  SOCKET_ERROR: "SocketError",
+  DISCONNECT: "disconnect",
+  CONNECTED: "connected",
+  SOCKET_ERROR: "socketError",
 });
 
 export const CURSOR_EVENT = Object.freeze({
@@ -29,7 +33,5 @@ export const CURSOR_EVENT = Object.freeze({
 });
 
 export const ROLE_CHANGE = Object.freeze({
-  ROLE_UPDATE: "RoleUpdate",
+  ROLE_UPDATE: "roleUpdate",
 });
-
-

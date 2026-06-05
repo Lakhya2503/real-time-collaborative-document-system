@@ -5,6 +5,8 @@ import {
   getCollaboration,
   setCollaboration,
   setDocument,
+  setPendingNotification,
+  setrealtimeNotification,
 } from "../../redis/client.js";
 import { emitSocketEvent } from "../../socket/socket.js";
 import { COLLABORATION_EVENT } from "../../socket/socketEvents.js";
@@ -14,61 +16,82 @@ import asyncHandler from "../../utils/asyncHandler.js";
 import { fetchDoc, secureUser } from "../../utils/helper.js";
 import User from "../auth/auth.model.js";
 import Doc from "../document/document.model.js";
-import { registerAndJoinCollab } from "../../services/sendCollabLink.service.js";
-
-const option = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "Lax",
-};
 
 export const sendCollaboration = asyncHandler(async (req, res) => {
   const { email, role } = req.body;
   const { docId } = req.params;
-
-  const collabData = {};
+  const io = req.app.get("io");
 
   const unHashedToken = crypto.randomBytes(20).toString("hex");
-
   const hashedToken = crypto
     .createHash("sha256")
     .update(unHashedToken)
     .digest("hex");
-
   const collabExpiry = 15 * 60;
+  const collabLink = `${ENV.BACKEND_URI}/collab/email=${email}/join=${unHashedToken}`;
+
+  const inviter = await secureUser(req.user._id);
+  const document = await fetchDoc(docId);
 
   const payload = {
     docId,
     email,
     role,
+    token: unHashedToken,
+    inviterId: inviter._id.toString(),
+    inviterName: inviter.fullName,
+    docTitle: document.title,
   };
 
   const user = await User.findOne({ email });
-
-  if (!user) {
-  await setCollaboration(email, payload, collabExpiry);
-  const collabLink = `${ENV.BACKEND_URI}/collab/email=${email}/join=${unHashedToken}`;
-   await registerAndJoinCollab(collabLink)
-    return res
-      .status(200)
-      .json(new ApiResponse(200, { collabLink }, "user register first"));
-  }
-
-
   await setCollaboration(hashedToken, payload, collabExpiry);
 
-  const collabLink = `${ENV.BACKEND_URI}/collab/email=${email}/join=${unHashedToken}`;
+  if (!user) {
+    // Deferred/Delayed Notification or Pre-Registreation Invite Queue
+    await setPendingNotification(email, payload);
+    /*
+        TODO : SERVICE FOR REGISTER AND JOIN COLLAB
+        await registerAndJoinCollab(collabLink)
+    */
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { collabLink },
+          "user not register invite link send via email"
+        )
+      );
+  }
+  // TODO : IF USER REGISTER
 
+  const userId = user._id.toString();
+  const socketsInRoom = await io.in(userId).fetchSockets();
+  const isOnline = socketsInRoom.length > 0;
+  console.log("isOnline", isOnline);
 
-  /*
-   TODO : ADD HERE THE EMAIL_SEND_SERVICE FOR COLLABLINK
-   await sendCollabLink(collabLink)
-  */
-
+  if (isOnline) {
+    await setrealtimeNotification(unHashedToken, payload);
+    io.to(userId).emit("send_real-time_notification", payload);
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { collabLink, sentVia: ["socket", "email", "redis"] },
+          "User online. Sent via socket + email"
+        )
+      );
+  }
+  await setPendingNotification(unHashedToken, payload);
   return res
     .status(200)
     .json(
-      new ApiResponse(201, { collabLink }, "collab link send successfully")
+      new ApiResponse(
+        200,
+        { collabLink, sentVia: ["email", "redis"] },
+        "User offline. Saved to Redis + email sent"
+      )
     );
 });
 
@@ -93,12 +116,11 @@ export const acceptCollaboration = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Owner can't add on Users");
   }
 
-  const userAlreadyExits = doc.users.some((user) => {
-    let users = user._id.toString() !== req.user._id.toString();
-    return users;
-  });
+  const userAlreadyExists = doc.users.some(
+    (collaborator) => collaborator.userId.toString() === req.user._id.toString()
+  );
 
-  if (userAlreadyExits) {
+  if (userAlreadyExists) {
     await deleteCollaboration(hashedTokenID);
     throw new ApiError(401, "User Already exist");
   }
@@ -118,7 +140,7 @@ export const acceptCollaboration = asyncHandler(async (req, res) => {
 
   emitSocketEvent(
     req,
-    collabData.docId,
+    collabData.inviterId,
     COLLABORATION_EVENT.ACCEPT_COLLABORATION,
     "Your invitation to collaborate has been accepted."
   );
@@ -131,7 +153,7 @@ export const acceptCollaboration = asyncHandler(async (req, res) => {
 
 export const declineJoinCollaboration = asyncHandler(async (req, res) => {
   const { email: upcommingEmail, join } = req.params;
-  const emailAccept = upcommingEmail.replace("email=", "");
+  // const emailAccept = upcommingEmail.replace("email=", "");
   const collabToken = join.replace("join=", "");
 
   const hashedTokenID = crypto
@@ -149,7 +171,7 @@ export const declineJoinCollaboration = asyncHandler(async (req, res) => {
 
   emitSocketEvent(
     req,
-    doc.docId,
+    doc.inviterId,
     COLLABORATION_EVENT.DECLINE_COLLABORATION,
     "Your collaboration request has been declined."
   );

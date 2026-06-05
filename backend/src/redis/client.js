@@ -141,4 +141,58 @@ export const getUpdateDocumentOperation = async (docId) => {
   return payload ? JSON.parse(payload) : null;
 };
 
+// ?? ===== NOTIFICATION =====
+// ?? 1. ===== REAL_TIME - NOTIFICATION =====
+// ***** Set real-time notification *****
+export const setrealtimeNotification = async (
+  realTimeKey,
+  payload,
+  expiry = 20 * 60
+) => {
+  if (!client || !isConnected) return null;
+  const key = `realTime:${realTimeKey}`;
+  await client.setex(key, expiry, JSON.stringify(payload));
+};
+
+// ***** Get real-time notification *****
+export const getrealtimeNotification = async (realTimeKey) => {
+  if (!client || !isConnected) return null;
+  const key = `realTime:${realTimeKey}`;
+  const payload = await client.get(key);
+  return payload ? JSON.parse(payload) : null;
+};
+
+// ***** delete real-time notification *****
+export const deleterealtimeNotification = async (realTimeKey) => {
+  if (!client || !isConnected) return null;
+  const key = `realTime:${realTimeKey}`;
+  await client.del(key);
+};
+
+// ?? 2. ===== PENDING - NOTIFICATION =====
+export const setPendingNotification = async (
+  pendingKey,
+  payload,
+  expiry = 7 * 24 * 60 * 60
+) => {
+  if (!client || !isConnected) return null;
+  const key = `pending:${pendingKey}`;
+  await client.rpush(key, expiry, JSON.stringify(payload));
+};
+
+// ***** Get real-time notification *****
+export const getPendingNotification = async (pendingKey) => {
+  if (!client || !isConnected) return null;
+  const key = `pending:${pendingKey}`;
+  const payload = await client.lrange(key,0 ,-1);
+  return payload ? JSON.parse(payload) : null;
+};
+
+// ***** delete real-time notification *****
+export const deletePendingNotification = async (pendingKey) => {
+  if (!client || !isConnected) return null;
+  const key = `pending:${pendingKey}`;
+  await client.del();
+};
+
 export { Publisher, Subscriber };

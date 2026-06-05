@@ -13,6 +13,7 @@
   "description": "",
   "dependencies": {
     "@getbrevo/brevo": "^5.0.4",
+    "@socket.io/admin-ui": "^0.5.1",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.10.0",
@@ -21,10 +22,12 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
     "helmet": "^8.2.0",
     "ioredis": "^5.10.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.6.2",
+    "request-ip": "^3.3.0",
     "socket.io": "^4.8.3"
   },
   "devDependencies": {

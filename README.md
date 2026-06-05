@@ -104,3 +104,8 @@ docker start mongodb
 docker start redis-stack
 
 ```
+
+### SOCKET
+
+emit - sender
+on - reciver
