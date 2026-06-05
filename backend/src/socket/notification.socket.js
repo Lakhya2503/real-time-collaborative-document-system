@@ -12,48 +12,6 @@ import {
   NOTIFICATION_EVENT,
 } from "./socketEvents.js";
 
-// export const mountNotificationEvent = (socket) => {
-//   socket.on(NOTIFICATION_EVENT.NOTIFICATION_SEND, async (data) => {
-//     user = socket.user;
-
-//     const doc = await getCollaboration(user.email);
-//     console.log("user", doc);
-
-//     if (doc.ownerId.toString() === user._id.toString()) {
-//       throw new ApiError(400, "Owner can't add on Users");
-//     }
-
-//     console.log("notification, ", doc);
-
-//     const userAlreadyExits = doc.users.some((user) => {
-//       let users = user._id.toString() !== req.user._id.toString();
-//       return users;
-//     });
-
-//     if (userAlreadyExits) {
-//       await deleteCollaboration(hashedTokenID);
-//       throw new ApiError(401, "User Already exist");
-//     }
-
-//     const updateDocument = await Doc.findByIdAndUpdate(
-//       collabData.docId,
-//       {
-//         $push: {
-//           users: {
-//             userId: user._id,
-//             role: collabData.role,
-//           },
-//         },
-//       },
-//       { new: true }
-//     );
-//     await deleteCollaboration(hashedTokenID);
-//     await setDocument(updateDocument._id, updateDocument);
-
-//     return doc;
-//   });
-// };
-
 export const mountRecivedRealTimeNotification = (socket) => {
   socket.on(INVITATION_EVENT.ACCEPT_INVITATION, async (data) => {
     const user = await secureUser(socket.user._id);
@@ -112,7 +70,7 @@ export const mountRecivedRealTimeNotification = (socket) => {
     await setDocument(updateDocument._id, updateDocument);
   });
 
-  socket.on(INVITATION_EVENT.ACCEPT_INVITATION, async (data) => {
+  socket.on(INVITATION_EVENT.DECLINE_INVITATION, async (data) => {
     const user = await secureUser(socket.user._id);
     const hashedTokenID = crypto
       .createHash("sha256")

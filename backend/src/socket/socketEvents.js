@@ -7,7 +7,8 @@ export const DOCUMENT_EVENT = Object.freeze({
   USER_REMOVE : "userRemove",
   SEND_OPERATION: "sendOperation",
   RECEIVE_OPERATION: "receiveOperation",
-  VERSION_SAVED : "versionSaved"
+  VERSION_SAVED : "versionSaved",
+  ACTIVE_USERS : "activeUser"
 });
 
 export const COLLABORATION_EVENT = Object.freeze({
@@ -26,7 +27,6 @@ export const INVITATION_EVENT = Object.freeze({
     ACCEPT_INVITATION : "acceptIneInvitation",
     DECLINE_INVITATION : "declineInvitation",
 })
-
 
 
 export const CONNECT_DISCONNET_EVENT = Object.freeze({
