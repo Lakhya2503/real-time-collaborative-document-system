@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { FileText, Star, Eye, ShieldAlert, ArrowRight } from 'lucide-react';
-import Sidebar from '../../components/layout/Sidebar';
-import Navbar from '../../components/layout/Navbar';
 import { documentService } from '../../services/documentService';
 import { useAuth } from '../../context/AuthContext';
 
 export default function SharedDocuments() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const { sidebarOpen, searchQuery } = useOutletContext();
   const [dbVer, setDbVer] = useState(0);
 
   const triggerReload = () => setDbVer(prev => prev + 1);
@@ -26,13 +23,7 @@ export default function SharedDocuments() {
   const sharedDocs = getSharedDocs();
 
   return (
-    <div className="min-h-screen bg-[#F7FAFF] dark:bg-[#070B14] text-[#081B3A] dark:text-[#E5E7EB] transition-colors duration-300 flex">
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-
-      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${sidebarOpen ? 'pl-[200px]' : 'pl-12'}`}>
-        <Navbar onSearchChange={setSearchQuery} />
-
-        <main className="flex-1 p-5 md:p-6 space-y-5 max-w-7xl w-full mx-auto overflow-y-auto">
+    <div className="p-5 md:p-6 space-y-5 max-w-7xl w-full mx-auto">
           {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 select-none text-left border-b border-[#E5E7EB] dark:border-white/10 pb-4 transition-colors duration-300">
             <div className="space-y-1">
@@ -103,8 +94,6 @@ export default function SharedDocuments() {
             </div>
           )}
 
-        </main>
-      </div>
     </div>
   );
 }

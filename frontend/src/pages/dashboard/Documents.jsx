@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useOutletContext } from 'react-router-dom';
 import { 
   FileText, 
   Star, 
@@ -17,8 +17,6 @@ import {
   FileBadge,
   ChevronDown
 } from 'lucide-react';
-import Sidebar from '../../components/layout/Sidebar';
-import Navbar from '../../components/layout/Navbar';
 import Button from '../../components/common/Button';
 import ShareDocumentModal from '../../components/modals/ShareDocumentModal';
 import RenameDocumentModal from '../../components/modals/RenameDocumentModal';
@@ -31,9 +29,8 @@ export default function Documents() {
   const [searchParams] = useSearchParams();
   const filter = searchParams.get('filter') || 'all'; // all | starred | recent | trash
   
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { sidebarOpen, searchQuery } = useOutletContext();
   const [viewMode, setViewMode] = useState('list'); // list | grid
-  const [searchQuery, setSearchQuery] = useState('');
   const [dbVer, setDbVer] = useState(0);
 
   // Advanced Filtering States
@@ -271,13 +268,7 @@ export default function Documents() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7FAFF] dark:bg-[#070B14] text-[#081B3A] dark:text-[#E5E7EB] transition-colors duration-300 flex">
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-
-      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${sidebarOpen ? 'pl-[200px]' : 'pl-12'}`}>
-        <Navbar onSearchChange={setSearchQuery} />
-
-        <main className="flex-1 px-5 pt-3.5 pb-6 md:px-6 md:pt-4 md:pb-8 space-y-3.5 max-w-7xl w-full mx-auto overflow-y-auto">
+    <div className="px-5 pt-3.5 pb-6 md:px-6 md:pt-4 md:pb-8 space-y-3.5 max-w-7xl w-full mx-auto">
           {/* Header explorer control bar */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 select-none text-left border-b border-[#E5E7EB] dark:border-white/5 pb-2 transition-colors duration-300">
             <div className="space-y-0.5">
@@ -679,9 +670,6 @@ export default function Documents() {
               ))}
             </div>
           )}
-
-        </main>
-      </div>
 
       {/* POPUPS & DIALOGS */}
       {selectedDoc && (

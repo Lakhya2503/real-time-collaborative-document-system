@@ -77,7 +77,7 @@ export default function Navbar({ onSearchChange }) {
             <img
               src={user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256'}
               alt={user?.name}
-              className="w-7 h-7 rounded-full object-cover border border-[#E5E7EB] dark:border-[#0D6EFD]/25 transition-colors duration-300"
+              className="w-10 h-10 rounded-full object-cover border border-[#E5E7EB] dark:border-[#0D6EFD]/25 transition-colors duration-300"
             />
           </button>
 
@@ -104,7 +104,7 @@ export default function Navbar({ onSearchChange }) {
                   <span>System Settings</span>
                 </button>
                 <button
-                  onClick={() => { setProfileOpen(false); logout(); navigate('/'); }}
+                  onClick={() => { setProfileOpen(false); logout(); navigate('/login'); }}
                   className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left text-[11px] font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 border-t border-[#E5E7EB] dark:border-white/10 mt-1 transition-colors duration-300"
                 >
                   <LogOut size={13} />

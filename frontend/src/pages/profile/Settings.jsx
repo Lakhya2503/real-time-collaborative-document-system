@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { ToggleLeft, ToggleRight, Settings as SettingsIcon, ShieldCheck, RefreshCw, Sun, Moon } from 'lucide-react';
-import Sidebar from '../../components/layout/Sidebar';
-import Navbar from '../../components/layout/Navbar';
 import Button from '../../components/common/Button';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
@@ -9,7 +8,7 @@ import { useAuth } from '../../context/AuthContext';
 export default function Settings() {
   const { theme, toggleTheme, isDark } = useTheme();
   const { triggerToast } = useAuth();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { sidebarOpen } = useOutletContext();
 
   // Simulated configurations states
   const [autoSave, setAutoSave] = useState(true);
@@ -21,13 +20,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7FAFF] dark:bg-[#070B14] text-[#081B3A] dark:text-[#E5E7EB] transition-colors duration-300 flex">
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-
-      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${sidebarOpen ? 'pl-44' : 'pl-12'}`}>
-        <Navbar />
-
-        <main className="flex-1 p-5 md:p-6 space-y-6 max-w-3xl w-full mx-auto overflow-y-auto">
+    <div className="p-5 md:p-6 space-y-6 max-w-3xl w-full mx-auto">
           {/* Header */}
           <div className="text-left border-b border-[#E5E7EB] dark:border-white/10 pb-4 transition-all duration-300 select-none">
             <h2 className="font-sans font-extrabold text-base md:text-lg text-[#081B3A] dark:text-white uppercase tracking-wider">
@@ -139,8 +132,6 @@ export default function Settings() {
             </div>
 
           </div>
-        </main>
-      </div>
     </div>
   );
 }

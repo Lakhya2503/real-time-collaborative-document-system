@@ -500,8 +500,8 @@ function EditingPageContent({ document: doc, theme, toggleTheme, onBack, onSave 
               placeholder="Untitled Document"
               title="Edit document title"
             />
-            <span className="word-file-extension">- Word</span>
-            <span className="word-title-cloud-status" title="Saved to Cloud" style={{ display: 'inline-flex', alignItems: 'center', marginLeft: '6px' }}>
+            <span className="word-file-extension" style={{ display: 'inline-flex', alignItems: 'center', height: '32px' }}>- Word</span>
+            <span className="word-title-cloud-status" title="Saved to Cloud" style={{ display: 'inline-flex', alignItems: 'center', marginLeft: '6px', height: '32px' }}>
               <Cloud size={14} style={{ color: 'var(--accent)' }} />
             </span>
           </div>
@@ -606,69 +606,68 @@ function EditingPageContent({ document: doc, theme, toggleTheme, onBack, onSave 
 
           {/* Font Group */}
           <div className="ribbon-group font-group">
-            <div className="ribbon-buttons-row">
-              <select className="ql-font" defaultValue="sans-serif" title="Font Family">
-                <option value="sans-serif">Calibri</option>
-                <option value="serif">Times New Roman</option>
-                <option value="monospace">Consolas</option>
-              </select>
-              <select className="ql-size" defaultValue="medium" title="Font Size">
-                <option value="small">9</option>
-                <option value="medium">11</option>
-                <option value="large">16</option>
-                <option value="huge">28</option>
-              </select>
-              {/* Grow/Shrink font sizing */}
-              <button 
-                type="button" 
-                onClick={() => {
-                  if (quillInstance.current) {
-                    const range = quillInstance.current.getSelection();
-                    if (range) {
-                      const currentSize = quillInstance.current.getFormat(range.index, range.length).size || 'medium';
-                      const sizes = { 'small': 'medium', 'medium': 'large', 'large': 'huge', 'huge': 'huge' };
-                      quillInstance.current.format('size', sizes[currentSize]);
+            <div className="ribbon-controls-container">
+              <div className="ribbon-buttons-row">
+                <select className="ql-font" defaultValue="sans-serif" title="Font Family">
+                  <option value="sans-serif">Calibri</option>
+                  <option value="serif">Times New Roman</option>
+                  <option value="monospace">Consolas</option>
+                </select>
+                <select className="ql-size" defaultValue="medium" title="Font Size">
+                  <option value="small">9</option>
+                  <option value="medium">11</option>
+                  <option value="large">16</option>
+                  <option value="huge">28</option>
+                </select>
+                {/* Grow/Shrink font sizing */}
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    if (quillInstance.current) {
+                      const range = quillInstance.current.getSelection();
+                      if (range) {
+                        const currentSize = quillInstance.current.getFormat(range.index, range.length).size || 'medium';
+                        const sizes = { 'small': 'medium', 'medium': 'large', 'large': 'huge', 'huge': 'huge' };
+                        quillInstance.current.format('size', sizes[currentSize]);
+                      }
                     }
-                  }
-                }}
-                title="Grow Font"
-                style={{ fontSize: '13px', fontWeight: 'bold' }}
-              >
-                A⁺
-              </button>
-              <button 
-                type="button" 
-                onClick={() => {
-                  if (quillInstance.current) {
-                    const range = quillInstance.current.getSelection();
-                    if (range) {
-                      const currentSize = quillInstance.current.getFormat(range.index, range.length).size || 'medium';
-                      const sizes = { 'huge': 'large', 'large': 'medium', 'medium': 'small', 'small': 'small' };
-                      quillInstance.current.format('size', sizes[currentSize]);
+                  }}
+                  title="Grow Font"
+                  style={{ fontSize: '13px', fontWeight: 'bold' }}
+                >
+                  A⁺
+                </button>
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    if (quillInstance.current) {
+                      const range = quillInstance.current.getSelection();
+                      if (range) {
+                        const currentSize = quillInstance.current.getFormat(range.index, range.length).size || 'medium';
+                        const sizes = { 'huge': 'large', 'large': 'medium', 'medium': 'small', 'small': 'small' };
+                        quillInstance.current.format('size', sizes[currentSize]);
+                      }
                     }
-                  }
-                }}
-                title="Shrink Font"
-                style={{ fontSize: '11px', fontWeight: 'bold' }}
-              >
-                A⁻
-              </button>
-              <button className="ql-clean" title="Clear Formatting"></button>
-            </div>
-
-            <div className="ribbon-buttons-row font-styles-row">
-              <button className="ql-bold" title="Bold (Ctrl+B)"></button>
-              <button className="ql-italic" title="Italic (Ctrl+I)"></button>
-              <button className="ql-underline" title="Underline (Ctrl+U)"></button>
-              <button className="ql-strike" title="Strikethrough"></button>
-              
-              {/* Script features */}
-              <button className="ql-script" value="sub" title="Subscript"></button>
-              <button className="ql-script" value="super" title="Superscript"></button>
-              
-              {/* Colors */}
-              <select className="ql-color" title="Font Color"></select>
-              <select className="ql-background" title="Highlight Color"></select>
+                  }}
+                  title="Shrink Font"
+                  style={{ fontSize: '11px', fontWeight: 'bold' }}
+                >
+                  A⁻
+                </button>
+                <button className="ql-clean" title="Clear Formatting"></button>
+                <button className="ql-bold" title="Bold (Ctrl+B)"></button>
+                <button className="ql-italic" title="Italic (Ctrl+I)"></button>
+                <button className="ql-underline" title="Underline (Ctrl+U)"></button>
+                <button className="ql-strike" title="Strikethrough"></button>
+                
+                {/* Script features */}
+                <button className="ql-script" value="sub" title="Subscript"></button>
+                <button className="ql-script" value="super" title="Superscript"></button>
+                
+                {/* Colors */}
+                <select className="ql-color" title="Font Color"></select>
+                <select className="ql-background" title="Highlight Color"></select>
+              </div>
             </div>
             <span className="ribbon-group-label">Font</span>
           </div>
@@ -770,9 +769,11 @@ function EditingPageContent({ document: doc, theme, toggleTheme, onBack, onSave 
         {/* INSERT TAB CONTENT */}
         <div className={`ribbon-tab-content ${activeRibbonTab === 'insert' ? 'visible' : 'hidden'}`}>
           <div className="ribbon-group">
-            <div className="ribbon-buttons-row">
-              <button className="ql-blockquote" title="Blockquote"></button>
-              <button className="ql-code-block" title="Code Block"></button>
+            <div className="ribbon-controls-container">
+              <div className="ribbon-buttons-row">
+                <button className="ql-blockquote" title="Blockquote"></button>
+                <button className="ql-code-block" title="Code Block"></button>
+              </div>
             </div>
             <span className="ribbon-group-label">Elements</span>
           </div>
@@ -781,19 +782,21 @@ function EditingPageContent({ document: doc, theme, toggleTheme, onBack, onSave 
         {/* REVIEW TAB CONTENT */}
         <div className={`ribbon-tab-content ${activeRibbonTab === 'review' ? 'visible' : 'hidden'}`}>
           <div className="ribbon-group">
-            <div className="ribbon-buttons-row">
-              <button type="button" className="ribbon-custom-btn" onClick={() => {
-                alert(`Proofing Statistics:\n- Total Words: ${wordCount}\n- Estimated Reading Time: ${Math.ceil(wordCount / 200)} min\n- Characters: ${(quillInstance.current ? quillInstance.current.getText() : '').length} chars`);
-              }} title="Proofing Statistics">
-                <BookOpen size={16} style={{ marginRight: '6px' }} />
-                <span>Word Count Details</span>
-              </button>
-              <button type="button" className="ribbon-custom-btn" onClick={() => {
-                alert("Spelling & Grammar Check completed!\nNo spelling or grammatical issues were found.");
-              }} title="Spelling Check">
-                <Check size={16} style={{ marginRight: '6px' }} />
-                <span>Spelling & Grammar</span>
-              </button>
+            <div className="ribbon-controls-container">
+              <div className="ribbon-buttons-row">
+                <button type="button" className="ribbon-custom-btn" onClick={() => {
+                  alert(`Proofing Statistics:\n- Total Words: ${wordCount}\n- Estimated Reading Time: ${Math.ceil(wordCount / 200)} min\n- Characters: ${(quillInstance.current ? quillInstance.current.getText() : '').length} chars`);
+                }} title="Proofing Statistics">
+                  <BookOpen size={16} style={{ marginRight: '6px' }} />
+                  <span>Word Count Details</span>
+                </button>
+                <button type="button" className="ribbon-custom-btn" onClick={() => {
+                  alert("Spelling & Grammar Check completed!\nNo spelling or grammatical issues were found.");
+                }} title="Spelling Check">
+                  <Check size={16} style={{ marginRight: '6px' }} />
+                  <span>Spelling & Grammar</span>
+                </button>
+              </div>
             </div>
             <span className="ribbon-group-label">Proofing</span>
           </div>
@@ -802,15 +805,17 @@ function EditingPageContent({ document: doc, theme, toggleTheme, onBack, onSave 
         {/* VIEW TAB CONTENT */}
         <div className={`ribbon-tab-content ${activeRibbonTab === 'view' ? 'visible' : 'hidden'}`}>
           <div className="ribbon-group">
-            <div className="ribbon-buttons-row">
-              <button type="button" className={`ribbon-custom-btn ${!leftSidebarCollapsed ? 'active' : ''}`} onClick={() => setLeftSidebarCollapsed(!leftSidebarCollapsed)}>
-                <List size={16} style={{ marginRight: '6px' }} />
-                <span>Navigation Outline</span>
-              </button>
-              <button type="button" className={`ribbon-custom-btn ${!rightSidebarCollapsed ? 'active' : ''}`} onClick={() => setRightSidebarCollapsed(!rightSidebarCollapsed)}>
-                <Users size={16} style={{ marginRight: '6px' }} />
-                <span>Collaborations Pane</span>
-              </button>
+            <div className="ribbon-controls-container">
+              <div className="ribbon-buttons-row">
+                <button type="button" className={`ribbon-custom-btn ${!leftSidebarCollapsed ? 'active' : ''}`} onClick={() => setLeftSidebarCollapsed(!leftSidebarCollapsed)}>
+                  <List size={16} style={{ marginRight: '6px' }} />
+                  <span>Navigation Outline</span>
+                </button>
+                <button type="button" className={`ribbon-custom-btn ${!rightSidebarCollapsed ? 'active' : ''}`} onClick={() => setRightSidebarCollapsed(!rightSidebarCollapsed)}>
+                  <Users size={16} style={{ marginRight: '6px' }} />
+                  <span>Collaborations Pane</span>
+                </button>
+              </div>
             </div>
             <span className="ribbon-group-label">Show / Hide Sidebars</span>
           </div>

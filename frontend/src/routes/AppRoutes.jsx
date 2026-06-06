@@ -3,20 +3,20 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 
 // Pages imports
 import Landing from '../pages/landing/Landing';
-import Login from '../pages/auth/Login';
-import Register from '../pages/auth/Register';
-import ForgotPassword from '../pages/auth/ForgotPassword';
-import ResetPassword from '../pages/auth/ResetPassword';
+import LoginPage from '../pages/auth/LoginPage';
+import RegisterPage from '../pages/auth/RegisterPage';
+import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage';
+import VerifyEmailPage from '../pages/auth/VerifyEmailPage';
+import SetNewPassword from '../pages/auth/SetNewPassword';
 import Dashboard from '../pages/dashboard/Dashboard';
 import Documents from '../pages/dashboard/Documents';
 import SharedDocuments from '../pages/dashboard/SharedDocuments';
 import EditingPage from '../pages/EditingPage';
-
-
 import Profile from '../pages/profile/Profile';
 import Settings from '../pages/profile/Settings';
 
-// Protected Route boundary
+// Layout and Protected Route
+import Layout from '../components/layout/Layout';
 import ProtectedRoute from '../components/layout/ProtectedRoute';
 
 export default function AppRoutes() {
@@ -24,47 +24,29 @@ export default function AppRoutes() {
     <Routes>
       {/* Public Pages */}
       <Route path="/" element={<Landing />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/verify-email" element={<VerifyEmailPage />} />
+      <Route path="/set-new-password" element={<SetNewPassword />} />
 
-      {/* Secure Authenticated Pages */}
-      <Route path="/dashboard" element={
+      {/* Secure Authenticated Pages wrapped in Layout */}
+      <Route element={
         <ProtectedRoute>
-          <Dashboard />
+          <Layout />
         </ProtectedRoute>
-      } />
+      }>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/documents" element={<Documents />} />
+        <Route path="/shared" element={<SharedDocuments />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/settings" element={<Settings />} />
+      </Route>
       
-      <Route path="/documents" element={
-        <ProtectedRoute>
-          <Documents />
-        </ProtectedRoute>
-      } />
-      
-      <Route path="/shared" element={
-        <ProtectedRoute>
-          <SharedDocuments />
-        </ProtectedRoute>
-      } />
-      
+      {/* Standalone Editor Route for immersive editing */}
       <Route path="/editor/:id" element={
         <ProtectedRoute>
           <EditingPage />
-        </ProtectedRoute>
-      } />
-
-
-      <Route path="/profile" element={
-
-        <ProtectedRoute>
-          <Profile />
-        </ProtectedRoute>
-      } />
-      
-      <Route path="/settings" element={
-        <ProtectedRoute>
-          <Settings />
         </ProtectedRoute>
       } />
 
