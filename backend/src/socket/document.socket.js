@@ -1,7 +1,6 @@
-import { setUpdateDocumentOperation } from "../redis/client.js";
 import ApiError from "../utils/ApiError.js";
-import asyncHandler from "../utils/asyncHandler.js";
 import { fetchDoc } from "../utils/helper.js";
+import { applyOperation, transformOperations } from "../utils/ot.js";
 import { DOCUMENT_EVENT } from "./socketEvents.js";
 
 const documentQueues = new Map();
@@ -107,28 +106,94 @@ export const mountDocumentRecivedOperation = (socket) => {
 
     const { docId, actions, version } = payload;
 
-    console.log(data);
-    const { docId, delta } = data.data;
-    console.log("delta", delta);
-    console.log("docId", docId);
-
-    delta.operation === "CONTENT_CHANGE";
-
     if (!docId) {
       throw new ApiError(400, "Doc Id is required");
     }
-    const document = await fetchDoc(docId);
-    socket.to(docId).emit(DOCUMENT_EVENT.RECEIVE_OPERATION, { docId, delta });
-    await setUpdateDocumentOperation(docId, delta);
-    console.log("Document setup successfully");
+
+    if (!actions || !Array.isArray(actions)) {
+      return socket.emit("error", {
+        message: "actionss array is required for OT",
+      });
+    }
+
+    if (typeof version !== "number") {
+      return socket.emit("error", {
+        message: "version number is required or OT",
+      });
+    }
+
+    // apply queueDocumentOperation
+    queueDocumentOperation(docId, async () => {
+      try {
+        const document = fetchDoc(docId);
+        documentVersion = document.version || 0;
+
+        let clientVersion = version;
+        let transformedActions = [...actions];
+
+        if (clientVersion < document.version) {
+          console.log(
+            `[OT Conflict] client version ${clientVersion} < Server Version ${document.version}. Tranforming.....`
+          );
+
+          const history = await GetDocHistory(docId); // from client
+          const concurrentOts = history.filter(
+            (op) => op.version > clientVersion
+          );
+
+          for (const op of concurrentOts) {
+            transformedActions = transformOperations( // ot
+              // from ot.js
+              op.actions,
+              transformedActions
+            );
+          }
+        }
+
+        /**
+         * GetDocHistory
+         * setDocument
+         * appendDocHistory
+         * markDocumentDirty
+         */
+
+        let currentContentText = document.content;
+        if (
+          typeof currentContentText === "object" &&
+          currentContentText !== null
+        ) {
+          currentContentText = currentContentText.text || "";
+        } else if (typeof currentContentText === "string") {
+          currentContentText = "";
+        }
+
+        const updateText = applyOperation(
+          currentContentText,
+          transformedActions
+        );
+
+        document.content = { text: updateText };
+        document.version = (document.version || 0) + 1;
+
+        await setDocument(docId, document); // client
+
+        await appendDocHistory(docId, document.version, transformedActions); // client
+
+        await markDocumentDirty(docId); // client
+
+        socket.io(docId).emit(DOCUMENT_EVENT.RECEIVE_OPERATION, {
+          docId,
+          actions: transformedActions,
+          version: document.version,
+        });
+
+        console.log(`Document ${docId} version update to ${document.version}`);
+      } catch (error) {
+        console.error("SEND OPERATION", error.message);
+        socket.emit("error", {
+          message: error.message || "Failed to proccess OT operations",
+        });
+      }
+    });
   });
 };
-
-const flushOnMongo = asyncHandler(async (payload) => {
-  // TODO : WHEN USER ON ONGOING WORK THEN EVERY 10SEC TRIGER THIS FUNCTION
-  const { data, docId } = payload;
-
-  // ?? GET ALL DATA FROM REDIS COLLAB
-  // ?? ARRANGE FULL OF DATA
-  // ?? AND FINALLY UPDATE FULL OF DATA
-});

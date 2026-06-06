@@ -185,8 +185,8 @@ export const setPendingNotification = async (
 export const getPendingNotification = async (pendingKey) => {
   if (!client || !isConnected) return null;
   const key = `pending:${pendingKey}`;
-  const payloads = await client.lrange(key,0 ,-1);
-  return payloads ?  payloads.map((item) => JSON.parse(item)) : null;
+  const payloads = await client.lrange(key, 0, -1);
+  return payloads ? payloads.map((item) => JSON.parse(item)) : null;
 };
 
 // ***** delete real-time notification *****
@@ -195,5 +195,40 @@ export const deletePendingNotification = async (pendingKey) => {
   const key = `pending:${pendingKey}`;
   await client.del();
 };
+
+// ?? ====== DIRTY DOCUMENT SET ======
+export const markDocumentDirty = async (docId) => {
+  if (!client || !isConnected) return null;
+  return await client.sadd("doc:dirty", docId);
+};
+
+export const getDirtyDocument = async (docId) => {
+  if (!client || !isConnected) return [];
+  return await client.smembers("doc:dirty");
+};
+
+export const removeDirtyDocument = async (docId) => {
+  if (!client || !isConnected) return 0;
+  return await client.srem("doc:dirty", docId);
+};
+
+// ?? ======= DOCUMENT VERSION HISTORY =======
+
+export const openDocHistory = async(docId, version, actions, expiry = 3600) => {
+  if(!client || !isConnected) return null;
+  const key = `doc:${docId}:history`
+  const payload = JSON.stringify({version, actions})
+  await client.rpush(key, payload)
+  await client.ltrim(key, -200, -1)
+  return await client.expire(key, expiry)
+}
+
+export const getDocument = async(docId) => {
+  if(!client || !isConnected) {
+    const key = `doc:${docId}:history`
+    const list = await client.lrange(key,0,-1)
+    return list ? list.map((item)=> JSON.parse(item)) : []
+  }
+}
 
 export { Publisher, Subscriber };
