@@ -1,55 +1,7 @@
-import cookieParser from "cookie-parser";
-import express from "express";
-import helmet from "helmet";
-import { createServer } from "http";
-import { Server } from "socket.io";
+import { httpServer } from "./app.js";
 import { ENV } from "./config/ENV.js";
 import { connectDB } from "./db/index.js";
 import { RedisConnect } from "./redis/client.js";
-import { initializeSocketIO } from "./socket/socket.js";
-import cors from 'cors'
-
-const app = express();
-const httpServer = createServer(app);
-
-const io = new Server(httpServer, {
-  pingTimeout: 60000,
-  cors: {
-    origin: ENV.CORS_ORIGIN,
-    credentials: true,
-  },
-});
-
-
-
-app.set("io", io);
-
-app.use(express.json({ extended: true, limit: "40kb" }));
-app.use(express.urlencoded({ extended: true, limit: "20kb" }));
-app.use(express.static("/public"));
-app.use(cookieParser());
-app.use(helmet());
-app.use(cors({
-    origin : ENV.CORS_ORIGIN,
-    credentials : true
-}))
-
-// TODO : FIRST CHECK THE HEALTH ROUTE
-
-
-
-// ?? ADD ALL ROUTES HERE
-import AuthRouter from "./module/auth/auth.route.js";
-import DocRouter from "./module/document/document.route.js";
-import CollabRouter from "./module/collaboration/collab.route.js";
-
-
-// TODO : USE ALL ROUTES HERE
-app.use("/api/v1/rtcds/auth", AuthRouter);
-app.use("/api/v1/rtcds/doc", DocRouter);
-app.use("/api/v1/rtcds/collab", CollabRouter);
-
-initializeSocketIO(io);
 
 const startServer = () => {
   httpServer.listen(ENV.PORT, () => {
@@ -57,7 +9,8 @@ const startServer = () => {
   });
 };
 
-try {
+if(ENV.NODE_ENV !== "test") {
+  try {
   // ** mongo
   await connectDB();
   console.log("MONGODB CONNECTED SUCCESSFULLY :🌿");
@@ -72,3 +25,5 @@ try {
   console.error("MONGODB CONNECTION ERROR", error.message);
   process.exit(1);
 }
+}
+

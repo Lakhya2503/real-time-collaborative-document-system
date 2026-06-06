@@ -7,14 +7,33 @@ export const DOCUMENT_EVENT = Object.freeze({
   USER_REMOVE : "userRemove",
   SEND_OPERATION: "sendOperation",
   RECEIVE_OPERATION: "receiveOperation",
-  VERSION_SAVED : "versionSaved"
+  VERSION_SAVED : "versionSaved",
+  ACTIVE_USERS : "activeUser"
 });
+
+export const COLLABORATION_EVENT = Object.freeze({
+      ACCEPT_COLLABORATION : "acceptCollaborationRequest",
+      DECLINE_COLLABORATION : "declineCollaborationRequest",
+})
+
+export const NOTIFICATION_EVENT = Object.freeze({
+    NOTIFICATION_SEND : "notificationSend",
+    NOTIFICATION_RECIVED : "notificationRecived",
+    SEND_REAL_TIME_NOTIFICATION : "sendRealTimeNotification",
+    RECIVED_REAL_TIME_NOTIFICATION : "recivedRealTimeNotification"
+})
+
+export const INVITATION_EVENT = Object.freeze({
+    ACCEPT_INVITATION : "acceptIneInvitation",
+    DECLINE_INVITATION : "declineInvitation",
+})
+
 
 export const CONNECT_DISCONNET_EVENT = Object.freeze({
   CONNECTION: "connection",
-  DISCONNECT: "Disconnect",
-  CONNECT: "Connect",
-  SOCKET_ERROR: "SocketError",
+  DISCONNECT: "disconnect",
+  CONNECTED: "connected",
+  SOCKET_ERROR: "socketError",
 });
 
 export const CURSOR_EVENT = Object.freeze({
@@ -23,5 +42,5 @@ export const CURSOR_EVENT = Object.freeze({
 });
 
 export const ROLE_CHANGE = Object.freeze({
-  ROLE_UPDATE: "RoleUpdate",
+  ROLE_UPDATE: "roleUpdate",
 });
